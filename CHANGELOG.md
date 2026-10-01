@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased fork changes
+## 1.0.0 - 2026-10-01
 
-This section describes the fork's changes beyond the original Better Emojis
-source. The manifest retains the upstream version `0.3.0`; no separate fork
-release version is declared here.
+First release of Better Emojis Personal, based on Wessel Boers' Better Emojis.
+The release uses `io.github.sadraalikhah.better-emojis` and preserves the
+original project's MIT attribution.
 
 ### Added
 

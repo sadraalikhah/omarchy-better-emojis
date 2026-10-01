@@ -19,41 +19,40 @@ Your existing emoji shortcut continues to work.
 
 ## Switch an existing installation to this fork
 
-The source plugin and this fork both use `wessel.better-emojis`. Omarchy
-cannot install both under that ID.
+The original plugin uses `wessel.better-emojis`. This release uses
+`io.github.sadraalikhah.better-emojis`, with a separate source folder and state
+directory. Both replace the built-in emoji picker, so disable the original
+when switching.
 
-1. Inspect the installed checkout:
-
-   ```bash
-   plugin_dir="$HOME/.config/omarchy/plugins/wessel.better-emojis"
-   git -C "$plugin_dir" status --short
-   git -C "$plugin_dir" remote -v
-   ```
-
-2. If `status --short` shows changes, preserve them before changing the
-   checkout. Save a copy of the plugin directory and its state directory at
-   `~/.local/state/omarchy/plugins/wessel.better-emojis/`. Commit local code
-   changes if you want to carry them through Git. Do not discard changes to
-   force an update.
-3. From a clean checkout, point `origin` to the fork and inspect its changes:
+1. Save a copy of the original source and state directories:
+   `~/.config/omarchy/plugins/wessel.better-emojis/` and
+   `~/.local/state/omarchy/plugins/wessel.better-emojis/`.
+2. To carry over your layout, recents, and learned preferences, copy the state
+   before installing the new ID:
 
    ```bash
-   git -C "$plugin_dir" remote set-url origin https://github.com/sadraalikhah/omarchy-better-emojis.git
-   git -C "$plugin_dir" fetch origin
-   git -C "$plugin_dir" diff HEAD origin/main
+   old_state="$HOME/.local/state/omarchy/plugins/wessel.better-emojis"
+   new_state="$HOME/.local/state/omarchy/plugins/io.github.sadraalikhah.better-emojis"
+   mkdir -p "$new_state"
+   for state_file in settings.json learning.json; do
+     if [ -f "$old_state/$state_file" ]; then
+       cp -n "$old_state/$state_file" "$new_state/$state_file"
+     fi
+   done
    ```
 
-4. Apply the fork with a fast-forward merge:
+   Existing files under the new ID are preserved.
+3. Disable the original plugin and install this release:
 
    ```bash
-   git -C "$plugin_dir" merge --ff-only origin/main
-   omarchy plugin validate "$plugin_dir"
-   omarchy-shell shell rescanPlugins
+   omarchy plugin disable wessel.better-emojis
+   omarchy plugin add https://github.com/sadraalikhah/omarchy-better-emojis.git --enable
    ```
 
-If the fast-forward fails, your history has diverged. Review and merge the
-changes in a separate working copy, then verify that copy before replacing
-an installed plugin. The commands above do not resolve local conflicts.
+4. Press `Super + Ctrl + E` and check your settings and recent selections.
+
+The original plugin directory remains intact. To return to it, disable
+`io.github.sadraalikhah.better-emojis` and enable `wessel.better-emojis`.
 
 ## Browse and select emojis
 
@@ -108,7 +107,7 @@ See [Search and learning](search.md) for the ranking rules and evidence limits.
 For a Git checkout whose `origin` points to this fork:
 
 ```bash
-omarchy plugin update wessel.better-emojis
+omarchy plugin update io.github.sadraalikhah.better-emojis
 ```
 
 The update command uses a fast-forward merge. If local edits prevent the
@@ -118,7 +117,7 @@ learning live outside the source checkout.
 ## Remove the plugin
 
 ```bash
-omarchy plugin remove wessel.better-emojis
+omarchy plugin remove io.github.sadraalikhah.better-emojis
 ```
 
 Removing the enabled replacement returns emoji handling to the built-in
@@ -135,7 +134,7 @@ Inspect the enabled plugins:
 omarchy plugin list --json
 ```
 
-Check that `wessel.better-emojis` is enabled and review other replacements
+Check that `io.github.sadraalikhah.better-emojis` is enabled and review other replacements
 for `omarchy.emojis`. Then rescan:
 
 ```bash
@@ -147,7 +146,7 @@ omarchy-shell shell rescanPlugins
 Validate the installed plugin and rescan it:
 
 ```bash
-omarchy plugin validate "$HOME/.config/omarchy/plugins/wessel.better-emojis"
+omarchy plugin validate "$HOME/.config/omarchy/plugins/io.github.sadraalikhah.better-emojis"
 omarchy-shell shell rescanPlugins
 ```
 

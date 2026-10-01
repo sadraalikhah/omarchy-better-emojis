@@ -79,10 +79,10 @@ Settings opens, or the picker closes.
 
 ## Stored state
 
-The default plugin ID is `wessel.better-emojis`. The state directory is:
+The default plugin ID is `io.github.sadraalikhah.better-emojis`. The state directory is:
 
 ```text
-~/.local/state/omarchy/plugins/wessel.better-emojis/
+~/.local/state/omarchy/plugins/io.github.sadraalikhah.better-emojis/
 ```
 
 | File | Contents |

@@ -1,4 +1,4 @@
-# Better Emojis for Omarchy
+# Better Emojis Personal for Omarchy
 
 An Omarchy emoji picker with English and Persian search, everyday reaction
 aliases, and local preferences that learn which equally relevant emoji you
@@ -6,7 +6,7 @@ choose. Open it with `Super + Ctrl + E`.
 
 This is [Sadra's fork](https://github.com/sadraalikhah/omarchy-better-emojis)
 of [Wessel Boers' Better Emojis](https://github.com/Wessel-Boers/omarchy-better-emojis).
-It retains the original plugin ID, `wessel.better-emojis`.
+It uses its own plugin ID, `io.github.sadraalikhah.better-emojis`, so the original plugin remains a separate project.
 
 ![Searching love shows affectionate faces, hearts, and gestures](docs/images/picker.png)
 
@@ -21,8 +21,20 @@ omarchy plugin add https://github.com/sadraalikhah/omarchy-better-emojis.git --e
 Press `Super + Ctrl + E`, type a search, and select an emoji. `Enter` inserts
 it and leaves it on the clipboard. `Ctrl + Enter` copies it.
 
-If the original Better Emojis plugin is already installed, both repositories
-use the same ID. Follow [Switch an existing installation to this fork](docs/usage.md#switch-an-existing-installation-to-this-fork).
+If the original Better Emojis plugin is already installed, follow [Switch an existing installation to this fork](docs/usage.md#switch-an-existing-installation-to-this-fork).
+
+## Requirements and removal
+
+Requires Omarchy's Quickshell shell on Wayland, `wl-copy`, `wtype`, Noto Color
+Emoji, and the Omarchy menu font with Nerd Font icons. Node.js and Python 3
+are needed only for development.
+
+Update or remove the plugin:
+
+```bash
+omarchy plugin update io.github.sadraalikhah.better-emojis
+omarchy plugin remove io.github.sadraalikhah.better-emojis
+```
 
 ## Features
 

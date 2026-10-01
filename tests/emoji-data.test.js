@@ -31,6 +31,9 @@ test("the generated database indexes every curated alias without flattening phra
 
 test("manifest continues to replace the stock emoji picker", () => {
   assert.equal(manifest.omarchy.clonedFrom, "omarchy.emojis")
+  assert.equal(manifest.id, "io.github.sadraalikhah.better-emojis")
+  assert.equal(manifest.name, "Better Emojis Personal")
+  assert.equal(manifest.version, "1.0.0")
 })
 
 test("searches English CLDR names and keywords", () => {

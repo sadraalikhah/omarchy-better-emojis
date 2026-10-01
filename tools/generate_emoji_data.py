@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate emojis.json for wessel.better-emojis.
+"""Generate emojis.json for io.github.sadraalikhah.better-emojis.
 
 Sources (fetched at run time, cached in the system temp directory):
   - Unicode Emoji 17.0 emoji-test.txt : canonical ordering, groups/subgroups

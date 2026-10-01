@@ -28,7 +28,7 @@ preference limits, decay, reloads, and resets.
 ## Verify changes on the desktop
 
 1. Save a copy of the installed plugin and its state before replacing files.
-2. Copy the working source to `~/.config/omarchy/plugins/wessel.better-emojis/`.
+2. Copy the working source to `~/.config/omarchy/plugins/io.github.sadraalikhah.better-emojis/`.
    Include QML, JavaScript modules, data, scripts, and the manifest.
 3. Run `omarchy plugin validate` against that directory.
 4. Run `omarchy-shell shell rescanPlugins`.

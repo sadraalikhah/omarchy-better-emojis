@@ -14,7 +14,7 @@ Item {
   property var shell: null
   property var manifest: null
 
-  readonly property string pluginId: (manifest && manifest.id) || "wessel.better-emojis"
+  readonly property string pluginId: (manifest && manifest.id) || "io.github.sadraalikhah.better-emojis"
   readonly property string pluginDir: {
     var url = Qt.resolvedUrl(".").toString()
     return url.indexOf("file://") === 0 ? url.substring(7) : url

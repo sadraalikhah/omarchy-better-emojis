@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "wessel.better-emojis",
-  "name": "Better Emojis",
-  "version": "0.3.0",
-  "author": "Wessel Boers",
+  "id": "io.github.sadraalikhah.better-emojis",
+  "name": "Better Emojis Personal",
+  "version": "1.0.0",
+  "author": "Sadra",
   "license": "MIT",
-  "description": "Category tabs, recents, skin tones and gender combining with preset sizing. Takes over Super+Ctrl+E.",
+  "description": "English and Persian emoji search, reaction aliases, safe local preference learning, recents, tones, and keyboard navigation.",
   "kinds": [
     "overlay"
   ],

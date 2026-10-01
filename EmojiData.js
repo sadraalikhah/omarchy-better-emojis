@@ -1,4 +1,4 @@
-// Data helpers for wessel.better-emojis: bilingual search, categories,
+// Data helpers for io.github.sadraalikhah.better-emojis: bilingual search, categories,
 // recents, gender display, and skin-tone handling.
 
 var TONE_MODIFIERS = ["\uD83C\uDFFB", "\uD83C\uDFFC", "\uD83C\uDFFD", "\uD83C\uDFFE", "\uD83C\uDFFF"]
