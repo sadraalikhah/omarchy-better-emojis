@@ -97,17 +97,17 @@ function oneEditAway(a, b) {
   return true
 }
 
-function wordQuality(query, word) {
+function wordQuality(query, word, allowFuzzy) {
   if (word === query) return 1000
   if (word.indexOf(query) === 0) return 750
   // Short infix matches turn "moan" into "Samoan" and "sad" into "saddle".
   if (query.length >= 5 && word.indexOf(query) >= 0) return 500
   // Short fuzzy matches are noisy (for example, "moan" matching "man").
-  if (query.length >= 5 && query.length <= 24 && word.length >= 5 && oneEditAway(query, word)) return 200
+  if (allowFuzzy && query.length >= 5 && query.length <= 24 && word.length >= 5 && oneEditAway(query, word)) return 200
   return -1
 }
 
-function scoreItem(item, words, query) {
+function scoreItem(item, words, query, allowFuzzy) {
   var fields = item._searchFields || searchFields(item)
   var score = 0
   var fieldBoost
@@ -118,7 +118,7 @@ function scoreItem(item, words, query) {
       var field = fields[f]
       fieldBoost = FIELD_BOOST[field.kind] || 0
       for (var i = 0; i < field.words.length; i++) {
-        var quality = wordQuality(words[w], field.words[i])
+        var quality = wordQuality(words[w], field.words[i], allowFuzzy)
         if (quality >= 0 && quality + fieldBoost > best) best = quality + fieldBoost
       }
     }
@@ -153,18 +153,19 @@ function filterEmojis(emojis, query, limit, category) {
   max = Math.max(0, Math.floor(max))
   if (max === 0) return []
 
-  var out = []
-  for (var i = 0; i < values.length; i++) {
-    var item = values[i]
-    if (!item || !item.e) continue
-    if (category && item.c !== category) continue
-    if (!words.length) {
-      out.push({ item: item, score: 0, index: i })
-      continue
+  function matches(allowFuzzy) {
+    var out = []
+    for (var i = 0; i < values.length; i++) {
+      var item = values[i]
+      if (!item || !item.e) continue
+      if (category && item.c !== category) continue
+      var score = words.length ? scoreItem(item, words, needle, allowFuzzy) : 0
+      if (score >= 0) out.push({ item: item, score: score, index: i })
     }
-    var score = scoreItem(item, words, needle)
-    if (score >= 0) out.push({ item: item, score: score, index: i })
+    return out
   }
+  var out = matches(false)
+  if (words.length && out.length === 0) out = matches(true)
   if (words.length) out.sort(function(a, b) { return b.score - a.score || a.index - b.index })
   if (out.length > max) out.length = max
   var result = []

@@ -1,78 +1,675 @@
 {
   "😮‍💨": {
-    "en": ["moan"],
-    "fa": ["ناله", "آه کشیدن", "نفس راحت", "خستم", "خسته ام"]
+    "en": [
+      "moan",
+      "moaning",
+      "groaning",
+      "phew",
+      "finally",
+      "what a relief",
+      "exhausted"
+    ],
+    "fa": [
+      "ناله",
+      "آه کشیدن",
+      "نفس راحت",
+      "خستم",
+      "خسته ام",
+      "آخیش",
+      "راحت شدم"
+    ]
   },
   "🥲": {
-    "en": ["bittersweet", "holding back tears"],
-    "fa": ["لبخند تلخ"]
+    "en": [
+      "bittersweet",
+      "holding back tears",
+      "happy tears",
+      "smiling through pain",
+      "pain behind the smile"
+    ],
+    "fa": [
+      "لبخند تلخ",
+      "اشک شوق",
+      "با خنده گریه"
+    ]
   },
   "🫠": {
-    "en": ["i can't even"],
-    "fa": ["ذوب شدم"]
+    "en": [
+      "i can't even",
+      "melting",
+      "awkward smile",
+      "cant cope"
+    ],
+    "fa": [
+      "ذوب شدم",
+      "آب شدم"
+    ]
   },
   "🙄": {
-    "en": ["eyeroll"],
-    "fa": ["چشم چرخاندن", "چشم غره", "چشم غره رفتن", "ای بابا"]
+    "en": [
+      "eyeroll",
+      "oh please",
+      "yeah right",
+      "here we go again"
+    ],
+    "fa": [
+      "چشم چرخاندن",
+      "چشم غره",
+      "چشم غره رفتن",
+      "ای بابا",
+      "باز شروع شد"
+    ]
   },
   "😏": {
-    "en": ["sideeye", "side eye", "side-eye", "sus", "sassy"],
-    "fa": ["نگاه چپ چپ", "نگاه معنی دار"]
+    "en": [
+      "sideeye",
+      "side eye",
+      "side-eye",
+      "sus",
+      "sassy",
+      "smug",
+      "flirty",
+      "flirting",
+      "you know what i mean"
+    ],
+    "fa": [
+      "نگاه چپ چپ",
+      "نگاه معنی دار",
+      "شیطنت",
+      "ناز کردن"
+    ]
   },
   "😒": {
-    "en": ["sideeye", "side eye", "side-eye"],
-    "fa": ["نگاه چپ چپ", "نگاه معنی دار", "قهرم", "حوصله ندارم", "بی حوصله"]
+    "en": [
+      "sideeye",
+      "side eye",
+      "side-eye",
+      "not impressed",
+      "unimpressed",
+      "bored",
+      "whatever"
+    ],
+    "fa": [
+      "نگاه چپ چپ",
+      "نگاه معنی دار",
+      "قهرم",
+      "حوصله ندارم",
+      "بی حوصله",
+      "بی تفاوت",
+      "اصلا برام مهم نیست"
+    ]
   },
   "👀": {
-    "en": ["sideeye", "side eye", "side-eye"],
-    "fa": ["نگاه چپ چپ", "نگاه زیرچشمی"]
+    "en": [
+      "sideeye",
+      "side eye",
+      "side-eye"
+    ],
+    "fa": [
+      "نگاه چپ چپ",
+      "نگاه زیرچشمی"
+    ]
   },
   "🤨": {
-    "en": ["sus", "suspicious"],
-    "fa": ["مشکوک", "جدی میگی"]
+    "en": [
+      "sus",
+      "suspicious",
+      "skeptical",
+      "really",
+      "are you sure"
+    ],
+    "fa": [
+      "مشکوک",
+      "جدی میگی",
+      "مطمئنی",
+      "واقعا"
+    ]
   },
   "😬": {
-    "en": ["cringe"],
-    "fa": ["ضایع", "ضایع شدم", "معذب", "خجالت آور"]
+    "en": [
+      "cringe",
+      "awkward",
+      "yikes",
+      "nervous smile"
+    ],
+    "fa": [
+      "ضایع",
+      "ضایع شدم",
+      "معذب",
+      "خجالت آور",
+      "اوضاع خیطه"
+    ]
   },
   "🫣": {
-    "fa": ["خجالت کشیدم", "آبروم رفت"]
+    "fa": [
+      "خجالت کشیدم",
+      "آبروم رفت",
+      "روم نمیشه",
+      "نمیتونم نگاه کنم"
+    ],
+    "en": [
+      "awkward",
+      "cant look",
+      "embarrassed",
+      "peeking"
+    ]
   },
   "😳": {
-    "fa": ["آبروم رفت", "ضایع شدم"]
+    "fa": [
+      "آبروم رفت",
+      "ضایع شدم",
+      "سرخ شدم",
+      "هول شدم"
+    ],
+    "en": [
+      "blushing",
+      "flustered",
+      "embarrassed",
+      "caught off guard"
+    ]
   },
   "😂": {
-    "fa": ["ترکیدم از خنده", "مرده از خنده"]
+    "fa": [
+      "ترکیدم از خنده",
+      "مرده از خنده",
+      "از خنده مردم"
+    ],
+    "en": [
+      "lol",
+      "lmao",
+      "rofl",
+      "crying laughing",
+      "dying of laughter",
+      "laughing so hard"
+    ]
   },
   "🤣": {
-    "fa": ["ترکیدم از خنده", "مرده از خنده"]
+    "fa": [
+      "ترکیدم از خنده",
+      "مرده از خنده",
+      "از خنده مردم"
+    ],
+    "en": [
+      "lol",
+      "lmao",
+      "rofl",
+      "crying laughing",
+      "dying of laughter",
+      "laughing so hard"
+    ]
   },
   "😩": {
-    "fa": ["حوصله ندارم", "کلافه", "کلافه شدم", "خسته شدم", "دیگه بریدم", "خستم"]
+    "fa": [
+      "حوصله ندارم",
+      "کلافه",
+      "کلافه شدم",
+      "خسته شدم",
+      "دیگه بریدم",
+      "خستم",
+      "ناله",
+      "ناله کردن",
+      "داغونم",
+      "از پا افتادم"
+    ],
+    "en": [
+      "moan",
+      "moaning",
+      "groan",
+      "groaning",
+      "whine",
+      "whining",
+      "exhausted",
+      "overwhelmed",
+      "fed up",
+      "i cant take it",
+      "ugh"
+    ]
   },
   "😫": {
-    "fa": ["کلافه", "کلافه شدم", "خسته ام", "خسته شدم", "دیگه بریدم"]
+    "fa": [
+      "کلافه",
+      "کلافه شدم",
+      "خسته ام",
+      "خسته شدم",
+      "دیگه بریدم",
+      "داغونم",
+      "از پا افتادم"
+    ],
+    "en": [
+      "groan",
+      "groaning",
+      "whine",
+      "whining",
+      "exhausted",
+      "fed up",
+      "ugh"
+    ]
   },
   "😤": {
-    "fa": ["حرصم گرفته", "اعصابم خورد شد"]
+    "fa": [
+      "حرصم گرفته",
+      "اعصابم خورد شد",
+      "حرص میخورم"
+    ],
+    "en": [
+      "frustrated",
+      "fuming",
+      "huff",
+      "huffing"
+    ]
   },
   "😔": {
-    "fa": ["دلم گرفته"]
+    "fa": [
+      "دلم گرفته",
+      "غمگینم",
+      "دلم تنگه"
+    ],
+    "en": [
+      "feeling down",
+      "miss you",
+      "downhearted"
+    ]
   },
   "🥺": {
-    "fa": ["دلم برات تنگ شده", "دلم تنگ شده"]
+    "fa": [
+      "دلم برات تنگ شده",
+      "دلم تنگ شده",
+      "خواهش میکنم",
+      "التماس"
+    ],
+    "en": [
+      "puppy eyes",
+      "pretty please",
+      "miss you",
+      "begging"
+    ]
   },
   "🫶": {
-    "fa": ["عاشقتم", "دوستت دارم"]
+    "fa": [
+      "عاشقتم",
+      "دوستت دارم",
+      "قربونت"
+    ],
+    "en": [
+      "love you",
+      "thank you",
+      "sending love"
+    ]
   },
   "🙏": {
-    "fa": ["دمت گرم", "خسته نباشی", "ممنون", "مرسی"]
+    "fa": [
+      "دمت گرم",
+      "خسته نباشی",
+      "ممنون",
+      "مرسی",
+      "سپاس",
+      "لطفا"
+    ],
+    "en": [
+      "thank you",
+      "thanks",
+      "please",
+      "appreciate it"
+    ]
   },
   "🤷": {
-    "fa": ["بیخیال", "نمی دونم"]
+    "fa": [
+      "بیخیال",
+      "نمی دونم",
+      "نمیدونم",
+      "نمی دانم"
+    ],
+    "en": [
+      "idk",
+      "i dont know",
+      "no idea",
+      "dunno",
+      "whatever"
+    ]
   },
   "🤦": {
-    "en": ["facepalm"],
-    "fa": ["کف دست روی صورت"]
+    "en": [
+      "facepalm",
+      "seriously",
+      "cant believe it",
+      "what was i thinking"
+    ],
+    "fa": [
+      "کف دست روی صورت",
+      "خاک تو سرم",
+      "این چه کاری بود"
+    ]
+  },
+  "💀": {
+    "en": [
+      "im dead",
+      "dead from laughing",
+      "dying of laughter",
+      "dead laughing"
+    ],
+    "fa": [
+      "مردم از خنده"
+    ]
+  },
+  "🥹": {
+    "en": [
+      "happy tears",
+      "so touched",
+      "moved to tears",
+      "teary eyed"
+    ],
+    "fa": [
+      "اشک شوق",
+      "بغضم گرفت"
+    ]
+  },
+  "😭": {
+    "en": [
+      "sobbing",
+      "ugly crying",
+      "crying my eyes out",
+      "heartbroken"
+    ],
+    "fa": [
+      "زار زدن",
+      "گریه ام گرفت"
+    ]
+  },
+  "😢": {
+    "en": [
+      "tearful",
+      "feeling sad",
+      "crying"
+    ],
+    "fa": [
+      "گریه ام گرفت",
+      "ناراحتم"
+    ]
+  },
+  "😞": {
+    "en": [
+      "let down",
+      "disappointed",
+      "feeling down"
+    ],
+    "fa": [
+      "ناامیدم",
+      "دلخورم"
+    ]
+  },
+  "🧐": {
+    "en": [
+      "investigating",
+      "suspicious",
+      "let me see"
+    ],
+    "fa": [
+      "بذار ببینم",
+      "در حال بررسی"
+    ]
+  },
+  "😠": {
+    "en": [
+      "angry",
+      "annoyed",
+      "mad at you"
+    ],
+    "fa": [
+      "عصبانی ام",
+      "عصبانی هستم"
+    ]
+  },
+  "😡": {
+    "en": [
+      "furious",
+      "rage",
+      "pissed off"
+    ],
+    "fa": [
+      "خیلی عصبانی ام",
+      "از عصبانیت قرمز شدم"
+    ]
+  },
+  "🤯": {
+    "en": [
+      "mind blown",
+      "mindblown",
+      "brain exploded",
+      "overwhelmed"
+    ],
+    "fa": [
+      "مغزم ترکید",
+      "پشمام ریخت"
+    ]
+  },
+  "😱": {
+    "en": [
+      "screaming",
+      "shocked",
+      "terrified",
+      "omg"
+    ],
+    "fa": [
+      "جیغ",
+      "وحشت کردم"
+    ]
+  },
+  "😰": {
+    "en": [
+      "anxious",
+      "panic",
+      "panicking",
+      "stressed"
+    ],
+    "fa": [
+      "استرس دارم",
+      "هول کردم"
+    ]
+  },
+  "😟": {
+    "en": [
+      "anxious",
+      "worried",
+      "concerned"
+    ],
+    "fa": [
+      "نگرانم"
+    ]
+  },
+  "😌": {
+    "en": [
+      "relaxed",
+      "at peace",
+      "phew",
+      "relieved"
+    ],
+    "fa": [
+      "آروم شدم",
+      "آرامش"
+    ]
+  },
+  "🤗": {
+    "en": [
+      "sending hugs",
+      "hug you",
+      "big hug"
+    ],
+    "fa": [
+      "بغل",
+      "بغلت کنم"
+    ]
+  },
+  "🥰": {
+    "en": [
+      "feeling loved",
+      "so loved",
+      "adorable",
+      "in love"
+    ],
+    "fa": [
+      "چه ناز",
+      "عاشق شدم"
+    ]
+  },
+  "😍": {
+    "en": [
+      "in love",
+      "love it",
+      "heart eyes",
+      "adorable"
+    ],
+    "fa": [
+      "عاشقش شدم",
+      "چه ناز"
+    ]
+  },
+  "😘": {
+    "en": [
+      "sending kisses",
+      "kiss you",
+      "mwah"
+    ],
+    "fa": [
+      "بوس",
+      "ماچ"
+    ]
+  },
+  "🫡": {
+    "en": [
+      "got it",
+      "understood",
+      "yes sir",
+      "roger that",
+      "respect"
+    ],
+    "fa": [
+      "چشم",
+      "اطاعت",
+      "احترام"
+    ]
+  },
+  "👍": {
+    "en": [
+      "got it",
+      "sounds good",
+      "well done",
+      "approved"
+    ],
+    "fa": [
+      "عالیه",
+      "تایید",
+      "قبوله"
+    ]
+  },
+  "👌": {
+    "en": [
+      "perfect",
+      "all good",
+      "looks good"
+    ],
+    "fa": [
+      "بی نقص",
+      "حله"
+    ]
+  },
+  "🤌": {
+    "en": [
+      "chef kiss",
+      "chefs kiss",
+      "perfection"
+    ],
+    "fa": [
+      "حرف نداره",
+      "عالیه"
+    ]
+  },
+  "🤞": {
+    "en": [
+      "fingers crossed",
+      "wish me luck",
+      "hope so"
+    ],
+    "fa": [
+      "امیدوارم",
+      "برام دعا کن"
+    ]
+  },
+  "🤙": {
+    "en": [
+      "call me",
+      "hang loose"
+    ],
+    "fa": [
+      "زنگ بزن",
+      "بهم زنگ بزن"
+    ]
+  },
+  "🤝": {
+    "en": [
+      "deal",
+      "agreed",
+      "agreement"
+    ],
+    "fa": [
+      "توافق",
+      "قبوله",
+      "دست بده"
+    ]
+  },
+  "🎉": {
+    "en": [
+      "congrats",
+      "congratulations",
+      "celebrate"
+    ],
+    "fa": [
+      "تبریک",
+      "جشن"
+    ]
+  },
+  "🔥": {
+    "en": [
+      "lit",
+      "on fire",
+      "awesome"
+    ],
+    "fa": [
+      "خفن",
+      "ترکوندی"
+    ]
+  },
+  "💯": {
+    "en": [
+      "nailed it",
+      "absolutely",
+      "one hundred percent"
+    ],
+    "fa": [
+      "صد درصد",
+      "کاملا"
+    ]
+  },
+  "😴": {
+    "en": [
+      "sleepy",
+      "asleep",
+      "going to sleep",
+      "good night"
+    ],
+    "fa": [
+      "خوابم میاد",
+      "شب بخیر"
+    ]
+  },
+  "🥱": {
+    "en": [
+      "sleepy",
+      "yawning",
+      "bored"
+    ],
+    "fa": [
+      "خوابم میاد",
+      "خمیازه"
+    ]
   }
 }

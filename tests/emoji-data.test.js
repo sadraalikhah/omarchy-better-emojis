@@ -18,6 +18,17 @@ test("generated dataset has the pinned Unicode emoji order and bilingual annotat
   assert.ok(allEmojis.every(item => item.ek))
 })
 
+test("the generated database indexes every curated alias without flattening phrases", () => {
+  const aliases = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "tools", "aliases.json"), "utf8"))
+  for (const [emoji, locales] of Object.entries(aliases)) {
+    assert.ok(byEmoji[emoji], `Missing emoji: ${emoji}`)
+    for (const [locale, terms] of Object.entries(locales)) {
+      const expected = [...new Set(terms.map(term => term.toLowerCase().trim().replace(/\s+/g, " ")))]
+      assert.deepEqual(byEmoji[emoji][locale === "en" ? "ae" : "af"], expected, `${emoji} ${locale}`)
+    }
+  }
+})
+
 test("manifest continues to replace the stock emoji picker", () => {
   assert.equal(manifest.omarchy.clonedFrom, "omarchy.emojis")
 })
@@ -28,7 +39,7 @@ test("searches English CLDR names and keywords", () => {
 })
 
 test("searches Persian CLDR names and keywords", () => {
-  assert.equal(EmojiData.filterEmojis(allEmojis, "ناله", 1)[0].e, "😮‍💨")
+  assert.deepEqual(EmojiData.filterEmojis(allEmojis, "ناله", 2).map(item => item.e), ["😮‍💨", "😩"])
   assert.equal(EmojiData.filterEmojis(allEmojis, "صورتک در حال بازدم", 1)[0].e, "😮‍💨")
 })
 
@@ -80,7 +91,7 @@ test("curated aliases outrank names and CLDR keywords", () => {
   ]))
   assert.deepEqual(EmojiData.filterEmojis(rankFixture, "rankword", 3).map(item => item.e), ["🏷️", "📎", "💡"])
   const realResults = EmojiData.filterEmojis(allEmojis, "moan", 10)
-  assert.equal(realResults[0].e, "😮‍💨")
+  assert.deepEqual(realResults.slice(0, 2).map(item => item.e), ["😮‍💨", "😩"])
   assert.equal(realResults.some(item => item.e === "👨"), false)
 })
 
@@ -200,4 +211,37 @@ test("short queries do not match inside unrelated words", () => {
     { e: "😩", ae: ["moaning"] }
   ]))
   assert.deepEqual(EmojiData.filterEmojis(fixture, "moan", 10).map(item => item.e), ["😮‍💨", "😩"])
+})
+
+test("typo matches are a fallback when direct matches are absent", () => {
+  const fixture = EmojiData.parseEmojis(JSON.stringify([
+    { e: "☕", n: "morning coffee" },
+    { e: "😩", ae: ["moaning"] }
+  ]))
+  assert.deepEqual(EmojiData.filterEmojis(fixture, "moaning", 10).map(item => item.e), ["😩"])
+  assert.deepEqual(EmojiData.filterEmojis(fixture, "moanign", 10).map(item => item.e), ["😩"])
+})
+
+test("moan includes weary and exhaling faces without unrelated short-word matches", () => {
+  for (const query of ["moan", "moaning"]) {
+    assert.deepEqual(EmojiData.filterEmojis(allEmojis, query, 10).map(item => item.e), ["😮‍💨", "😩"])
+  }
+})
+
+test("everyday reactions and emotional phrases find relevant selections", () => {
+  for (const [query, expected] of [
+    ["groaning", ["😩", "😫", "😮‍💨"]],
+    ["overwhelmed", ["😩", "🤯"]],
+    ["awkward", ["😬", "🫣"]],
+    ["dying of laughter", ["😂", "🤣", "💀"]],
+    ["miss you", ["🥺", "😔"]],
+    ["got it", ["🫡", "👍"]],
+    ["chef kiss", ["🤌"]],
+    ["ناله", ["😮‍💨", "😩"]],
+    ["داغونم", ["😩", "😫"]],
+    ["مغزم ترکید", ["🤯"]]
+  ]) {
+    const matches = EmojiData.filterEmojis(allEmojis, query, 5).map(item => item.e)
+    for (const emoji of expected) assert.ok(matches.includes(emoji), `${query} should include ${emoji}; got ${matches}`)
+  }
 })

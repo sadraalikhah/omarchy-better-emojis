@@ -38,9 +38,15 @@ omarchy plugin remove wessel.better-emojis
   emojilib's English keywords added as a lower-ranked supplement. Search
   normalizes Persian ی/ي, ک/ك, diacritics, and half-spaces, and includes
   curated English and Persian colloquial terms.
+- **Everyday reactions** — 367 curated aliases across 51 emojis cover terms
+  such as moan/moaning, overwhelmed, awkward, dying of laughter, miss you,
+  and got it. Searching moan includes both 😮‍💨 and 😩.
 - **Fuzzy ranking** — exact aliases and names rank first, followed by CLDR
-  keywords, partial matches, and one-character typo matches. The local scorer
-  adds no runtime dependency.
+  keywords and partial matches. One-character typo matches are used when no
+  direct matches exist. The local scorer adds no runtime dependency.
+  Alias phrases stay separate so exact phrases rank above scattered words;
+  extra synonyms do not inflate relevance. Short queries match whole words
+  or prefixes, so moan does not match Samoan flags.
 - **Recents** — the last inserted emojis are remembered and available from
   the Recent tab. Normal selection pastes into the focused app and leaves the
   emoji on the regular clipboard; `Ctrl + Enter` remains copy-only.
@@ -143,3 +149,6 @@ Unicode Emoji and CLDR data, used under the Unicode License v3; see
 come from emojilib 4.0.3 under MIT; see [`EMOJILIB-LICENSE.txt`](EMOJILIB-LICENSE.txt).
 The generator pins Emoji 17.0, CLDR 48.2, and emojilib 4.0.3. The project's
 English and Persian colloquial terms are maintained in `tools/aliases.json`.
+Add terms to each emoji's `en` or `fa` list there, then regenerate `emojis.json`
+and run the tests. The generator preserves individual phrases in the search
+database; no network lookup is needed while using the picker.
