@@ -789,14 +789,6 @@ Item {
                 font.pixelSize: Style.font.title
               }
 
-              Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: chip.modelData.label
-                color: chip.isActive ? root.selectedText : root.foreground
-                opacity: chip.isActive ? 1 : 0.65
-                font.family: root.fontFamily
-                font.pixelSize: Style.font.body
-              }
             }
 
             MouseArea {

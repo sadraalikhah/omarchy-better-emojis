@@ -25,7 +25,7 @@ omarchy plugin remove wessel.better-emojis
 
 ## Features
 
-- **Category tabs** — All, Recent, Smileys & Emotion, People & Body,
+- **Icon-only category tabs** — All, Recent, Smileys & Emotion, People & Body,
   Animals & Nature, Food & Drink, Activities, Travel & Places, Objects,
   Symbols, Flags. Search ranks matches across every category and requires all
   query words to match.
