@@ -27,8 +27,15 @@ omarchy plugin remove wessel.better-emojis
 
 - **Category tabs** — All, Recent, Smileys & Emotion, People & Body,
   Animals & Nature, Food & Drink, Activities, Travel & Places, Objects,
-  Symbols, Flags. Searching always searches every category with multi-word AND
-  matching.
+  Symbols, Flags. Search ranks matches across every category and requires all
+  query words to match.
+- **English and Persian search** — names and keywords come from CLDR, with
+  emojilib's English keywords added as a lower-ranked supplement. Search
+  normalizes Persian ی/ي, ک/ك, diacritics, and half-spaces, and includes
+  curated English and Persian colloquial terms.
+- **Fuzzy ranking** — exact aliases and names rank first, followed by CLDR
+  keywords, partial matches, and one-character typo matches. The local scorer
+  adds no runtime dependency.
 - **Recents** — the last inserted emojis are remembered and available from
   the Recent tab.
 - **Skin tones** — choose a default tone in Settings or show all five exact
@@ -49,8 +56,9 @@ omarchy plugin remove wessel.better-emojis
   `PanelSeparator` components. Toggle shapes follow system corner roundedness.
 - **Nerd Font navigation icons** — category tabs and view navigation use the
   same Nerd Font icon style as the Omarchy bar.
-- **1,914 emojis** — generated from Unicode emoji-test.txt with CLDR names and
-  keywords (Emoji 17-era data), ordered exactly like every other platform.
+- **1,914 emojis** — generated in Unicode order from Emoji 17.0
+  `emoji-test.txt`, CLDR 48.2 English and Persian annotations, and emojilib
+  4.0.3 English keywords.
 
 ## Keyboard shortcuts
 
@@ -103,6 +111,12 @@ Regenerate the emoji dataset (requires network):
 python3 tools/generate_emoji_data.py
 ```
 
+Run the local search and data tests:
+
+```bash
+node tests/emoji-data.test.js
+```
+
 Validate the manifest the same way the shell does:
 
 ```bash
@@ -116,4 +130,9 @@ Edits under `~/.config/omarchy/plugins/` hot-reload.
 
 ## License
 
-MIT
+Plugin code is MIT licensed. The generated names and keywords derive from
+Unicode Emoji and CLDR data, used under the Unicode License v3; see
+[`UNICODE-LICENSE.txt`](UNICODE-LICENSE.txt). Supplemental English keywords
+come from emojilib 4.0.3 under MIT; see [`EMOJILIB-LICENSE.txt`](EMOJILIB-LICENSE.txt).
+The generator pins Emoji 17.0, CLDR 48.2, and emojilib 4.0.3. The project's
+English and Persian colloquial terms are maintained in `tools/aliases.json`.

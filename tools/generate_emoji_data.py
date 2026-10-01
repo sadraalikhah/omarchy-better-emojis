@@ -1,33 +1,47 @@
 #!/usr/bin/env python3
 """Generate emojis.json for wessel.better-emojis.
 
-Sources (fetched at run time, cached in /tmp):
-  - unicode.org emoji-test.txt   : canonical ordering, groups/subgroups
-  - CLDR annotations en.xml      : names + keywords per emoji
-  - CLDR annotationsDerived.xml  : extra keywords for ZWJ sequences
+Sources (fetched at run time, cached in the system temp directory):
+  - Unicode Emoji 17.0 emoji-test.txt : canonical ordering, groups/subgroups
+  - CLDR 48.2 annotations en/fa      : names + keywords per emoji
+  - CLDR 48.2 annotationsDerived     : extra keywords for ZWJ sequences
+  - emojilib 4.0.3                   : supplemental English keywords
+  - tools/aliases.json               : curated English/Persian colloquialisms
 
 Output entry shape:
-  {"e": "<emoji>", "k": "<name> keyword1 keyword2 ...", "c": "<category>", "t": true, "v": [...]}
+  {"e": "<emoji>", "k": "<English terms>", "n": "<English name>",
+   "f": "<Persian terms>", "fn": "<Persian name>", "ae": "<English aliases>",
+   "af": "<Persian aliases>", "c": "<category>", "t": true, "v": [...]}
 
 `t` marks emojis that accept a single skin-tone modifier (U+1F3FB..U+1F3FF).
 Tone-variant rows themselves are dropped from the grid; they are reached via
 the plugin's skin-tone selector instead.
 """
 
+import json
+import os
+import re
 import sys
+import tempfile
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-CACHE = Path("/tmp/opencode/emoji")
+CACHE = Path(os.environ.get("EMOJI_DATA_CACHE", Path(tempfile.gettempdir()) / "omarchy-better-emojis-emoji-data"))
 OUT = Path(__file__).resolve().parent.parent / "emojis.json"
+ALIASES = Path(__file__).with_name("aliases.json")
 
-CLDR_TAG = "release-48"
+EMOJI_VERSION = "17.0.0"
+CLDR_TAG = "release-48-2"
+EMOJILIB_VERSION = "4.0.3"
 
 SOURCES = {
-    "emoji-test.txt": "https://www.unicode.org/Public/emoji/latest/emoji-test.txt",
+    "emoji-test.txt": f"https://www.unicode.org/Public/{EMOJI_VERSION}/emoji/emoji-test.txt",
     "annotations-en.xml": f"https://raw.githubusercontent.com/unicode-org/cldr/{CLDR_TAG}/common/annotations/en.xml",
     "annotationsDerived-en.xml": f"https://raw.githubusercontent.com/unicode-org/cldr/{CLDR_TAG}/common/annotationsDerived/en.xml",
+    "annotations-fa.xml": f"https://raw.githubusercontent.com/unicode-org/cldr/{CLDR_TAG}/common/annotations/fa.xml",
+    "annotationsDerived-fa.xml": f"https://raw.githubusercontent.com/unicode-org/cldr/{CLDR_TAG}/common/annotationsDerived/fa.xml",
+    "emojilib.json": f"https://raw.githubusercontent.com/muan/emojilib/v{EMOJILIB_VERSION}/dist/emoji-en-US.json",
 }
 
 MODIFIERS = [chr(c) for c in range(0x1F3FB, 0x1F400)]
@@ -47,7 +61,12 @@ SPECIAL_GENDER_GROUPS = [
 
 
 def fetch(name: str) -> str:
-    path = CACHE / name
+    version = (
+        EMOJI_VERSION if name == "emoji-test.txt"
+        else EMOJILIB_VERSION if name == "emojilib.json"
+        else CLDR_TAG
+    )
+    path = CACHE / f"{version}-{name}"
     if not path.exists():
         print(f"downloading {name} ...")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -141,12 +160,43 @@ def parse_annotations(path: str):
     return {cp: (v[0], v[1]) for cp, v in out.items()}
 
 
+def parse_emojilib(raw: str) -> dict:
+    """Return searchable English keywords from the pinned emojilib dataset."""
+    source = json.loads(raw)
+    if not isinstance(source, dict):
+        raise ValueError("emojilib keyword data must be an object")
+    out = {}
+    for emoji, values in source.items():
+        if not isinstance(emoji, str) or not isinstance(values, list):
+            continue
+        terms, seen = [], set()
+        for value in values:
+            if not isinstance(value, str):
+                continue
+            term = " ".join(value.lower().replace("_", " ").split())
+            searchable = " ".join(re.sub(r"[^a-z0-9]+", " ", term).split())
+            # Drop emoticons such as :D; normalization would otherwise turn
+            # them into noisy one-letter search terms.
+            if not searchable or all(len(word) < 2 for word in searchable.split()):
+                continue
+            if term not in seen:
+                seen.add(term)
+                terms.append(term)
+        out[emoji] = terms
+    return out
+
+
 def lookup(annotations, text):
     """Exact match first, else VS16-stripped (CLDR keys omit U+FE0F)."""
     hit = annotations.get(text)
     if hit is None:
         hit = annotations.get(text.replace("\ufe0f", ""))
     return hit or ("", [])
+
+
+def lookup_emojilib(keywords, text):
+    """Match exact emoji keys, tolerating CLDR's optional variation selector."""
+    return keywords.get(text) or keywords.get(text.replace("\ufe0f", "")) or []
 
 
 def build_keywords(name: str, words: list) -> str:
@@ -157,6 +207,11 @@ def build_keywords(name: str, words: list) -> str:
             seen.add(token)
             parts.append(token)
     return " ".join(parts)
+
+
+def load_aliases() -> dict:
+    """Return the small hand-maintained colloquial alias map."""
+    return json.loads(ALIASES.read_text(encoding="utf-8"))
 
 
 def main() -> int:
@@ -202,8 +257,19 @@ def main() -> int:
             gender_group_for[special[role]] = key
         for text in special.get("extra", []):
             gender_group_for[text] = key
-    ann = parse_annotations("annotations-en.xml")
-    derived = parse_annotations("annotationsDerived-en.xml")
+    annotations = {
+        locale: (
+            parse_annotations(f"annotations-{locale}.xml"),
+            parse_annotations(f"annotationsDerived-{locale}.xml"),
+        )
+        for locale in ("en", "fa")
+    }
+    emojilib = parse_emojilib(fetch("emojilib.json"))
+    aliases = load_aliases()
+    known_emojis = {"".join(seq) for seq, _ in entries if not any(ch in MODIFIERS for ch in seq)}
+    unknown_aliases = set(aliases) - known_emojis
+    if unknown_aliases:
+        raise ValueError(f"Aliases reference emojis absent from emoji-test.txt: {sorted(unknown_aliases)}")
 
     out, skipped_variants, missing_kw = [], 0, 0
     for seq, group in entries:
@@ -212,19 +278,39 @@ def main() -> int:
             skipped_variants += 1
             continue
 
-        name, words = lookup(ann, text)
-        dname, dwords = lookup(derived, text)
-        name = name or dname
-        merged = list(dict.fromkeys(words + dwords))
-        if not name and not merged:
-            missing_kw += 1
-        k = build_keywords(name, merged)
-        if not k:
-            k = " ".join(f"u+{ord(ch):x}" for ch in seq)
+        localized = {}
+        for locale, (ann, derived) in annotations.items():
+            name, words = lookup(ann, text)
+            dname, dwords = lookup(derived, text)
+            localized[locale] = (name or dname, list(dict.fromkeys(words + dwords)))
 
-        item = {"e": text, "k": k, "c": group or "Symbols"}
-        if name:
-            item["n"] = name
+        name_en, words_en = localized["en"]
+        name_fa, words_fa = localized["fa"]
+        words_emojilib = lookup_emojilib(emojilib, text)
+        if not name_en and not words_en and not name_fa and not words_fa:
+            missing_kw += 1
+        k_en = build_keywords(name_en, words_en)
+        k_fa = build_keywords(name_fa, words_fa)
+        if not k_en:
+            k_en = " ".join(f"u+{ord(ch):x}" for ch in seq)
+
+        item = {"e": text, "k": k_en, "c": group or "Symbols"}
+        if name_en:
+            item["n"] = name_en
+        if k_fa:
+            item["f"] = k_fa
+        k_extra_en = build_keywords("", words_emojilib)
+        if k_extra_en:
+            item["ek"] = k_extra_en
+        if name_fa:
+            item["fn"] = name_fa
+        extra = aliases.get(text, {})
+        aliases_en = build_keywords("", extra.get("en", []))
+        aliases_fa = build_keywords("", extra.get("fa", []))
+        if aliases_en:
+            item["ae"] = aliases_en
+        if aliases_fa:
+            item["af"] = aliases_fa
         exact_variants = variants.get(canonical_key(seq), {})
         if all(tone in exact_variants for tone in range(1, 6)):
             item["t"] = True
