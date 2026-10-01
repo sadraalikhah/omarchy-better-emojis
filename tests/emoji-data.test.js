@@ -2,7 +2,9 @@
 
 const assert = require("node:assert/strict")
 const fs = require("node:fs")
+const os = require("node:os")
 const path = require("node:path")
+const { spawnSync } = require("node:child_process")
 const { test } = require("node:test")
 const EmojiData = require("../EmojiData.js")
 
@@ -141,3 +143,31 @@ test("expands a tone-enabled emoji to its base and five variants", () => {
   assert.ok(rows.every(row => row.preToned))
 })
 
+test("pastes first, then leaves the selected emoji on the regular clipboard", t => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "better-emojis-test-"))
+  t.after(() => fs.rmSync(temp, { recursive: true, force: true }))
+  const omarchy = path.join(temp, "Omarchy path with spaces")
+  const bin = path.join(temp, "bin")
+  const trace = path.join(temp, "trace")
+  const clipboard = path.join(temp, "clipboard")
+  const helper = path.join(omarchy, "bin", "omarchy-menu-emoji-insert")
+  const script = path.join(__dirname, "..", "tools", "insert-and-copy.sh")
+  fs.mkdirSync(path.dirname(helper), { recursive: true })
+  fs.mkdirSync(bin)
+  fs.writeFileSync(helper, '#!/usr/bin/env bash\nprintf "paste:%s\\n" "$1" >> "$TRACE"\n')
+  fs.writeFileSync(path.join(bin, "wl-copy"), '#!/usr/bin/env bash\nprintf "clipboard:%s\\n" "$*" >> "$TRACE"\ncat > "$CLIPBOARD"\n')
+  fs.chmodSync(helper, 0o755)
+  fs.chmodSync(path.join(bin, "wl-copy"), 0o755)
+
+  const emoji = "🧑‍💻"
+  const result = spawnSync("bash", [script, omarchy, emoji], {
+    encoding: "utf8",
+    env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, TRACE: trace, CLIPBOARD: clipboard }
+  })
+  assert.equal(result.status, 0, result.stderr)
+  assert.deepEqual(fs.readFileSync(trace, "utf8").trim().split("\n"), [
+    `paste:${emoji}`,
+    "clipboard:--type text/plain"
+  ])
+  assert.equal(fs.readFileSync(clipboard, "utf8"), emoji)
+})

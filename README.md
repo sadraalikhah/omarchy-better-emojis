@@ -37,7 +37,8 @@ omarchy plugin remove wessel.better-emojis
   keywords, partial matches, and one-character typo matches. The local scorer
   adds no runtime dependency.
 - **Recents** — the last inserted emojis are remembered and available from
-  the Recent tab.
+  the Recent tab. Normal selection pastes into the focused app and leaves the
+  emoji on the regular clipboard; `Ctrl + Enter` remains copy-only.
 - **Skin tones** — choose a default tone in Settings or show all five exact
   Unicode tone variants beside each base emoji. Cycle through with a hotkey.
   The grid never shows duplicate standalone tone variants.
@@ -111,7 +112,7 @@ Regenerate the emoji dataset (requires network):
 python3 tools/generate_emoji_data.py
 ```
 
-Run the local search, data, and display tests:
+Run the local search, display, and clipboard behavior tests:
 
 ```bash
 node tests/emoji-data.test.js

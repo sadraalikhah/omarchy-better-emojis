@@ -322,7 +322,7 @@ Item {
     if (copyOnly) {
       Quickshell.execDetached(["wl-copy", "--type", "text/plain", str])
     } else {
-      Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-menu-emoji-insert", str])
+      Quickshell.execDetached([root.pluginDir + "/tools/insert-and-copy.sh", root.omarchyPath, str])
     }
   }
 
