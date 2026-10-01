@@ -846,6 +846,16 @@ Item {
               radius: root.cornerRadius
               color: hasCursor ? root.selectedBackground : "transparent"
 
+              PanelToolTip {
+                visible: root.opened && !root.showSettings && cell.hasCursor
+                  && !resultGrid.moving && cell.name !== ""
+                  && cell.y + cell.height > resultGrid.contentY
+                  && cell.y < resultGrid.contentY + resultGrid.height
+                text: cell.name
+                delay: 600
+                fontFamily: root.fontFamily
+              }
+
               Text {
                 text: {
                   if (parent.preToned || !parent.toneable || Number(root.settings.skinTone) === 0) return parent.emoji

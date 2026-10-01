@@ -50,6 +50,8 @@ omarchy plugin remove wessel.better-emojis
 - **Recents** — the last inserted emojis are remembered and available from
   the Recent tab. Normal selection pastes into the focused app and leaves the
   emoji on the regular clipboard; `Ctrl + Enter` remains copy-only.
+- **Emoji names** — pause on an emoji with the mouse or keyboard for 600 ms
+  to see its name in a themed tooltip.
 - **Skin tones** — choose a default tone in Settings or show all five exact
   Unicode tone variants beside each base emoji. Cycle through with a hotkey.
   The grid never shows duplicate standalone tone variants.
