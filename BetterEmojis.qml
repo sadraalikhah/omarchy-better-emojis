@@ -187,20 +187,6 @@ Item {
     return out
   }
 
-  function genderMember(item) {
-    if (!item || !item.gg) return item
-    var mode = Math.max(0, Math.min(2, Number(root.settings.genderMode) || 0))
-    var order = [item.gm, item.gf, item.gp]
-    if (mode === 0) order = [item.gm, item.gf, item.gp]
-    else if (mode === 1) order = [item.gf, item.gm, item.gp]
-    else order = [item.gp, item.gm, item.gf]
-    for (var i = 0; i < order.length; i++) {
-      var candidate = order[i]
-      if (candidate && root.emojiMap[candidate]) return root.emojiMap[candidate]
-    }
-    return item
-  }
-
   function pickRecentEmptyAdjective() {
     var list = root.recentAdjectives
     if (!list || list.length === 0) return
@@ -212,27 +198,6 @@ Item {
     root.recentEmptyAdjective = list[idx]
   }
 
-  function displayItems(items) {
-    var out = []
-    var seenGroups = {}
-    for (var i = 0; i < items.length; i++) {
-      var item = root.settings.mergeGenders ? root.genderMember(items[i]) : items[i]
-      if (!item || !item.e) continue
-      if (root.settings.mergeGenders && item.gg) {
-        if (seenGroups[item.gg]) continue
-        seenGroups[item.gg] = true
-      }
-      if (!root.settings.showAllTones || !item.t) {
-        out.push({ item: item, preToned: false })
-        continue
-      }
-      out.push({ item: { e: item.e, n: item.n, k: item.k, c: item.c }, preToned: true })
-      for (var tone = 0; tone < 5; tone++)
-        out.push({ item: { e: item.v[tone], n: item.n, k: item.k, c: item.c }, preToned: true })
-    }
-    return out
-  }
-
   function rebuildDisplay() {
     var out
     if (root.searching) {
@@ -242,7 +207,7 @@ Item {
     } else {
       out = EmojiData.filterEmojis(root.emojis, "", 1000, root.activeCategory === "all" ? "" : root.activeCategory)
     }
-    var rows = root.displayItems(out)
+    var rows = EmojiData.displayItems(out, root.emojiMap, root.settings.mergeGenders, root.settings.genderMode, root.settings.showAllTones)
     root.filteredEmojis = rows
 
     displayModel.clear()

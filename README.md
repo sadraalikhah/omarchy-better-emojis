@@ -111,7 +111,7 @@ Regenerate the emoji dataset (requires network):
 python3 tools/generate_emoji_data.py
 ```
 
-Run the local search and data tests:
+Run the local search, data, and display tests:
 
 ```bash
 node tests/emoji-data.test.js

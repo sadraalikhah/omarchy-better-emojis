@@ -179,6 +179,41 @@ function categories(emojis) {
   return out
 }
 
+function genderMember(item, emojiMap, mode) {
+  if (!item || !item.gg) return item
+  var selected = Math.max(0, Math.min(2, Number(mode) || 0))
+  var order = selected === 0 ? [item.gm, item.gf, item.gp]
+    : selected === 1 ? [item.gf, item.gm, item.gp]
+    : [item.gp, item.gm, item.gf]
+  for (var i = 0; i < order.length; i++) {
+    if (order[i] && emojiMap[order[i]]) return emojiMap[order[i]]
+  }
+  return item
+}
+
+function displayItems(items, emojiMap, mergeGenders, genderMode, showAllTones) {
+  var values = Array.isArray(items) ? items : []
+  var map = emojiMap || {}
+  var out = []
+  var seenGroups = {}
+  for (var i = 0; i < values.length; i++) {
+    var item = mergeGenders ? genderMember(values[i], map, genderMode) : values[i]
+    if (!item || !item.e) continue
+    if (mergeGenders && item.gg) {
+      if (seenGroups[item.gg]) continue
+      seenGroups[item.gg] = true
+    }
+    if (!showAllTones || !item.t) {
+      out.push({ item: item, preToned: false })
+      continue
+    }
+    out.push({ item: { e: item.e, n: item.n, k: item.k, c: item.c }, preToned: true })
+    for (var tone = 0; tone < 5; tone++)
+      out.push({ item: { e: item.v[tone], n: item.n, k: item.k, c: item.c }, preToned: true })
+  }
+  return out
+}
+
 function toneModifier(tone) {
   var index = Number(tone)
   if (isNaN(index) || index < 1 || index > TONE_MODIFIERS.length) return ""
@@ -232,6 +267,8 @@ if (typeof module !== "undefined") {
     normalizeText: normalizeText,
     filterEmojis: filterEmojis,
     categories: categories,
+    genderMember: genderMember,
+    displayItems: displayItems,
     toneModifier: toneModifier,
     applySkinTone: applySkinTone,
     supportsTone: supportsTone,

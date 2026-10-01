@@ -121,3 +121,23 @@ test("preserves recent and skin-tone helpers", () => {
   assert.equal(EmojiData.stripTones("👍🏽"), "👍")
 })
 
+test("preserves combined and separate gender display modes", () => {
+  const group = "test-group"
+  const person = { e: "🧑", gg: group, gp: "🧑", gf: "👩", gm: "👨" }
+  const female = { e: "👩", gg: group, gp: "🧑", gf: "👩", gm: "👨" }
+  const male = { e: "👨", gg: group, gp: "🧑", gf: "👩", gm: "👨" }
+  const map = { "🧑": person, "👩": female, "👨": male }
+  assert.equal(EmojiData.genderMember(person, map, 0).e, "👨")
+  assert.equal(EmojiData.genderMember(person, map, 1).e, "👩")
+  assert.equal(EmojiData.genderMember(person, map, 2).e, "🧑")
+  assert.deepEqual(EmojiData.displayItems([person, female, male], map, true, 2, false).map(row => row.item.e), ["🧑"])
+  assert.deepEqual(EmojiData.displayItems([person, female, male], map, false, 0, false).map(row => row.item.e), ["🧑", "👩", "👨"])
+})
+
+test("expands a tone-enabled emoji to its base and five variants", () => {
+  const toneable = { e: "👍", n: "thumbs up", k: "thumb thumbs up", c: "People & Body", t: true, v: ["👍🏻", "👍🏼", "👍🏽", "👍🏾", "👍🏿"] }
+  const rows = EmojiData.displayItems([toneable], {}, false, 0, true)
+  assert.deepEqual(rows.map(row => row.item.e), ["👍", ...toneable.v])
+  assert.ok(rows.every(row => row.preToned))
+})
+
