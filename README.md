@@ -8,7 +8,7 @@ This is [Sadra's fork](https://github.com/sadraalikhah/omarchy-better-emojis)
 of [Wessel Boers' Better Emojis](https://github.com/Wessel-Boers/omarchy-better-emojis).
 It retains the original plugin ID, `wessel.better-emojis`.
 
-![Searching moan shows the exhaling and weary faces](docs/images/picker.png)
+![Searching love shows affectionate faces, hearts, and gestures](docs/images/picker.png)
 
 ## Install
 
