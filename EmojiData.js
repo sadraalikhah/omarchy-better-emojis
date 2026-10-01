@@ -100,7 +100,8 @@ function oneEditAway(a, b) {
 function wordQuality(query, word) {
   if (word === query) return 1000
   if (word.indexOf(query) === 0) return 750
-  if (word.indexOf(query) >= 0) return 500
+  // Short infix matches turn "moan" into "Samoan" and "sad" into "saddle".
+  if (query.length >= 5 && word.indexOf(query) >= 0) return 500
   // Short fuzzy matches are noisy (for example, "moan" matching "man").
   if (query.length >= 5 && query.length <= 24 && word.length >= 5 && oneEditAway(query, word)) return 200
   return -1

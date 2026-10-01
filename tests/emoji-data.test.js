@@ -126,6 +126,8 @@ test("extra or duplicated aliases do not inflate relevance", () => {
   assert.deepEqual(EmojiData.filterEmojis(fixture, "got it", 2).map(item => item.e), ["👍", "🫡"])
 })
 
+
+
 test("keeps category order and category filtering", () => {
   const names = EmojiData.categories(allEmojis)
   assert.equal(names.length, 9)
@@ -189,4 +191,13 @@ test("pastes first, then leaves the selected emoji on the regular clipboard", t 
     "clipboard:--type text/plain"
   ])
   assert.equal(fs.readFileSync(clipboard, "utf8"), emoji)
+})
+
+test("short queries do not match inside unrelated words", () => {
+  const fixture = EmojiData.parseEmojis(JSON.stringify([
+    { e: "🇼🇸", n: "Samoan flag" },
+    { e: "😮‍💨", ae: ["moan"] },
+    { e: "😩", ae: ["moaning"] }
+  ]))
+  assert.deepEqual(EmojiData.filterEmojis(fixture, "moan", 10).map(item => item.e), ["😮‍💨", "😩"])
 })
