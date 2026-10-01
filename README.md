@@ -5,13 +5,17 @@ with category tabs, recents, skin tones, gender variants, and adjustable sizing.
 Designed to adhere to Omarchy conventions — fully keyboard-accessible, Nerd
 Fonts icons for categories, and instant open/close with no lag.
 
+This fork adds ranked English/Persian search, colloquial aliases, clipboard
+retention after insertion, and icon-only category tabs. It is based on
+[Wessel Boers' Better Emojis](https://github.com/Wessel-Boers/omarchy-better-emojis).
+
 ![preview](preview.png)
 ![settings](screenshots/picture/settings.png)
 
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/Wessel-Boers/omarchy-better-emojis.git --enable
+omarchy plugin add https://github.com/sadraalikhah/omarchy-better-emojis.git --enable
 ```
 
 That's it. The plugin registers itself as the implementation behind
