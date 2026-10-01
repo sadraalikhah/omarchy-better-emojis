@@ -107,6 +107,25 @@ test("matches typos and requires every word in a multi-word query", () => {
   assert.deepEqual(EmojiData.filterEmojis(fixture, "red heart", 10).map(item => item.e), ["❤️"])
 })
 
+test("indexes individual alias phrases and ranks exact phrases above scattered words", () => {
+  const fixture = EmojiData.parseEmojis(JSON.stringify([
+    { e: "👍", ae: ["got", "it"] },
+    { e: "🫡", ae: ["got it", "understood"] }
+  ]))
+  assert.deepEqual(EmojiData.filterEmojis(fixture, "got it", 2).map(item => item.e), ["🫡", "👍"])
+  assert.equal(EmojiData.filterEmojis(fixture, "understood", 1)[0].e, "🫡")
+  const legacy = EmojiData.parseEmojis(JSON.stringify([{ e: "🫡", ae: "got it understood" }]))
+  assert.equal(EmojiData.filterEmojis(legacy, "understood", 1)[0].e, "🫡")
+})
+
+test("extra or duplicated aliases do not inflate relevance", () => {
+  const fixture = EmojiData.parseEmojis(JSON.stringify([
+    { e: "👍", ae: ["got it"] },
+    { e: "🫡", ae: ["got it", "got-it", "got it", "got it thanks", "unrelated phrase"] }
+  ]))
+  assert.deepEqual(EmojiData.filterEmojis(fixture, "got it", 2).map(item => item.e), ["👍", "🫡"])
+})
+
 test("keeps category order and category filtering", () => {
   const names = EmojiData.categories(allEmojis)
   assert.equal(names.length, 9)

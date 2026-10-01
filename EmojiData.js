@@ -42,15 +42,21 @@ function normalizeText(value) {
 
 function searchFields(item) {
   var fields = []
+  var seen = {}
   var values = [
     [item.ae, "alias"], [item.af, "alias"],
     [item.n, "name"], [item.fn, "name"],
     [item.k, "keyword"], [item.f, "keyword"], [item.ek, "supplemental"]
   ]
   for (var i = 0; i < values.length; i++) {
-    var value = normalizeText(values[i][0])
-    if (!value) continue
-    fields.push({ text: value, words: value.split(" "), kind: values[i][1] })
+    var terms = Array.isArray(values[i][0]) ? values[i][0] : [values[i][0]]
+    for (var j = 0; j < terms.length; j++) {
+      var value = normalizeText(terms[j])
+      var key = values[i][1] + ":" + value
+      if (!value || seen[key]) continue
+      seen[key] = true
+      fields.push({ text: value, words: value.split(" "), kind: values[i][1] })
+    }
   }
   return fields
 }
@@ -119,19 +125,20 @@ function scoreItem(item, words, query) {
     score += best
   }
 
+  var phraseBoost = 0
   for (var j = 0; j < fields.length; j++) {
     var phrase = fields[j]
     if (phrase.text === query) {
-      score += phrase.kind === "alias" ? 900
+      phraseBoost = Math.max(phraseBoost, phrase.kind === "alias" ? 900
         : phrase.kind === "name" ? 600
-        : phrase.kind === "supplemental" ? 100 : 300
+        : phrase.kind === "supplemental" ? 100 : 300)
     } else if (phrase.text.indexOf(query) >= 0) {
-      score += phrase.kind === "alias" ? 400
+      phraseBoost = Math.max(phraseBoost, phrase.kind === "alias" ? 400
         : phrase.kind === "name" ? 200
-        : phrase.kind === "supplemental" ? 25 : 50
+        : phrase.kind === "supplemental" ? 25 : 50)
     }
   }
-  return score
+  return score + phraseBoost
 }
 
 // filterEmojis(emojis, query, limit)          -> all categories

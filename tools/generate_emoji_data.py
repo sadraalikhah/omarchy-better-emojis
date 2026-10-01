@@ -10,8 +10,8 @@ Sources (fetched at run time, cached in the system temp directory):
 
 Output entry shape:
   {"e": "<emoji>", "k": "<English terms>", "n": "<English name>",
-   "f": "<Persian terms>", "fn": "<Persian name>", "ae": "<English aliases>",
-   "af": "<Persian aliases>", "c": "<category>", "t": true, "v": [...]}
+   "f": "<Persian terms>", "fn": "<Persian name>", "ae": ["<English alias>"],
+   "af": ["<Persian alias>"], "c": "<category>", "t": true, "v": [...]}
 
 `t` marks emojis that accept a single skin-tone modifier (U+1F3FB..U+1F3FF).
 Tone-variant rows themselves are dropped from the grid; they are reached via
@@ -305,8 +305,8 @@ def main() -> int:
         if name_fa:
             item["fn"] = name_fa
         extra = aliases.get(text, {})
-        aliases_en = build_keywords("", extra.get("en", []))
-        aliases_fa = build_keywords("", extra.get("fa", []))
+        aliases_en = list(dict.fromkeys(" ".join(term.lower().split()) for term in extra.get("en", []) if term.strip()))
+        aliases_fa = list(dict.fromkeys(" ".join(term.lower().split()) for term in extra.get("fa", []) if term.strip()))
         if aliases_en:
             item["ae"] = aliases_en
         if aliases_fa:
