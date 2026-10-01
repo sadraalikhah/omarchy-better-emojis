@@ -52,6 +52,13 @@ omarchy plugin remove wessel.better-emojis
   emoji on the regular clipboard; `Ctrl + Enter` remains copy-only.
 - **Emoji names** — pause on an emoji with the mouse or keyboard for 600 ms
   to see its name in a themed tooltip.
+- **Personal search preferences** — after three deliberate choices for the
+  same normalized query, preferred emojis move ahead of equally relevant
+  matches. Stronger matches always stay ahead. Mouse clicks and Enter after
+  keyboard navigation count; hovering and accepting the automatic first
+  selection do not. Preferences apply on the next search and leave category
+  browsing unchanged. Disable learning or reset one search or all preferences
+  in Settings. Everything is stored locally, separately from the emoji data.
 - **Skin tones** — choose a default tone in Settings or show all five exact
   Unicode tone variants beside each base emoji. Cycle through with a hotkey.
   The grid never shows duplicate standalone tone variants.
@@ -109,6 +116,14 @@ Settings include:
 - All-genders grid toggle, off by default so genders are combined
 - Show Recent tab and Clear recent emojis
 - Show category titles, off by default
+- Learn from selections, on by default
+- Reset this search and Reset all learned preferences
+
+Learning is stored in a separate `learning.json` beside `settings.json`.
+It keeps at most 128 searches and eight emoji preferences per search, with
+counts capped at 20. Evidence loses half its weight every 30 days; preferences
+with less than one effective selection are ignored. Turning learning off
+stops recording and restores normal ranking while retaining saved preferences.
 
 ## How it works
 
@@ -130,6 +145,7 @@ Run the local search, display, and clipboard behavior tests:
 
 ```bash
 node tests/emoji-data.test.js
+node tests/search-preferences.test.js
 ```
 
 Validate the manifest the same way the shell does:

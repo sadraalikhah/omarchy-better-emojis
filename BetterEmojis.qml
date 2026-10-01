@@ -5,6 +5,7 @@ import QtQuick
 import qs.Commons
 import qs.Ui
 import "EmojiData.js" as EmojiData
+import "SearchPreferences.js" as SearchPreferences
 
 Item {
   id: root
@@ -19,11 +20,18 @@ Item {
     return url.indexOf("file://") === 0 ? url.substring(7) : url
   }
   readonly property string statePath: Quickshell.env("HOME") + "/.local/state/omarchy/plugins/" + pluginId + "/settings.json"
+  readonly property string learningPath: Quickshell.env("HOME") + "/.local/state/omarchy/plugins/" + pluginId + "/learning.json"
+  property var learning: SearchPreferences.empty()
+  property bool learningLoaded: false
+  property bool learningDirty: false
+  readonly property string learningQuery: EmojiData.normalizedQuery(filterText)
+  readonly property bool hasQueryLearning: learning.queries.some(function(entry) { return entry.query === root.learningQuery })
 
   property bool opened: false
   property string filterText: ""
   property int selectedIndex: 0
   property bool cursorActive: false
+  property string selectionOrigin: "default"
   property var emojis: []
   property var filteredEmojis: []
   property var emojiMap: ({})
@@ -92,7 +100,7 @@ Item {
   ]
 
   function defaultSettings() {
-    return { cellSize: 46, cardWidth: 480, cardHeight: 560, skinTone: 0, showAllTones: false, showAllGenders: false, mergeGenders: true, genderMode: 0, showRecents: true, showCategoryTitles: false, lastCategory: "all", recents: [] }
+    return { cellSize: 46, cardWidth: 480, cardHeight: 560, skinTone: 0, showAllTones: false, showAllGenders: false, mergeGenders: true, genderMode: 0, showRecents: true, showCategoryTitles: false, learnSelections: true, lastCategory: "all", recents: [] }
   }
 
   function mergedSettings(patch) {
@@ -155,6 +163,7 @@ Item {
   function dismiss() {
     root.opened = false
     flushSettings()
+    flushLearning()
     if (root.shell && typeof root.shell.hide === "function")
       root.shell.hide(root.pluginId)
   }
@@ -199,9 +208,12 @@ Item {
   }
 
   function rebuildDisplay() {
+    root.selectionOrigin = "default"
     var out
     if (root.searching) {
-      out = EmojiData.filterEmojis(root.emojis, root.filterText, 1000)
+      var preferences = root.settings.learnSelections
+        ? SearchPreferences.scores(root.learning, root.learningQuery, Date.now()) : {}
+      out = EmojiData.filterEmojis(root.emojis, root.filterText, 1000, "", preferences)
     } else if (root.activeCategory === "recent") {
       out = recentItems()
     } else {
@@ -215,6 +227,7 @@ Item {
       var item = rows[j].item
       displayModel.append({
         emoji: item.e,
+        searchEmoji: rows[j].searchEmoji,
         name: item.n || "",
         toneable: !!item.t,
         variants: item._variantsStr !== undefined ? item._variantsStr : JSON.stringify(item.v || []),
@@ -235,7 +248,9 @@ Item {
 
   function setCursor(index) {
     if (displayModel.count === 0) return
-    selectedIndex = Math.max(0, Math.min(index, displayModel.count - 1))
+    var next = Math.max(0, Math.min(index, displayModel.count - 1))
+    if (!cursorActive || next !== selectedIndex) root.selectionOrigin = "keyboard"
+    selectedIndex = next
     cursorActive = true
     resultGrid.positionViewAtIndex(selectedIndex, GridView.Contain)
   }
@@ -305,9 +320,14 @@ Item {
     root.setCategory(root.tabs[wrapped].id)
   }
 
-  function activateIndex(index, copyOnly) {
+  function activateIndex(index, copyOnly, deliberate) {
     if (index < 0 || index >= displayModel.count) return
     var row = displayModel.get(index)
+    if (deliberate && root.settings.learnSelections && root.learningLoaded && root.learningQuery) {
+      root.learning = SearchPreferences.record(root.learning, root.learningQuery, row.searchEmoji, Date.now())
+      root.learningDirty = true
+      root.scheduleSave()
+    }
     root.applySelected(row.emoji, row.toneable, row.variants, row.preToned, copyOnly === true)
   }
 
@@ -331,7 +351,7 @@ Item {
     patch[key] = value
     root.settings = root.mergedSettings(patch)
     root.scheduleSave()
-    if (key === "showAllTones" || key === "mergeGenders" || key === "genderMode") root.rebuildDisplay()
+    if (key === "showAllTones" || key === "mergeGenders" || key === "genderMode" || key === "learnSelections") root.rebuildDisplay()
   }
 
   function snapToOption(value, options) {
@@ -367,6 +387,15 @@ Item {
     }
   }
 
+  function resetLearning(query) {
+    root.learning = SearchPreferences.reset(root.learning, query)
+    root.learningDirty = true
+    root.scheduleSave()
+    root.rebuildDisplay()
+    root.settingsGroup = 9
+    Qt.callLater(root.ensureSettingsVisible)
+  }
+
   function toggleSettings() {
     root.showSettings = !root.showSettings
     Qt.callLater(function() {
@@ -400,11 +429,13 @@ Item {
   }
 
   function selectSettingsGroup(delta) {
-    var total = 9
+    var total = 12
     var next = root.settingsGroup
     for (var step = 0; step < total; step++) {
       next = (next + delta + total) % total
       if (next === 7 && root.settings.showRecents === false) continue
+      if (next === 10 && !root.hasQueryLearning) continue
+      if (next === 11 && !root.learning.queries.length) continue
       break
     }
     root.settingsGroup = next
@@ -424,6 +455,9 @@ Item {
     else if (root.settingsGroup === 6) item = recentsRow
     else if (root.settingsGroup === 7) item = clearButton
     else if (root.settingsGroup === 8) item = categoryTitlesRow
+    else if (root.settingsGroup === 9) item = learningRow
+    else if (root.settingsGroup === 10) item = resetSearchButton
+    else if (root.settingsGroup === 11) item = resetLearningButton
     if (!item || !settingsPage) return
     var top = settingsPage.contentY
     var bottom = top + settingsPage.height
@@ -465,6 +499,12 @@ Item {
       if (root.settings.showRecents !== false) root.clearRecents()
     } else if (root.settingsGroup === 8) {
       root.applySetting("showCategoryTitles", !root.settings.showCategoryTitles)
+    } else if (root.settingsGroup === 9) {
+      root.applySetting("learnSelections", !root.settings.learnSelections)
+    } else if (root.settingsGroup === 10) {
+      if (root.hasQueryLearning) root.resetLearning(root.learningQuery)
+    } else if (root.settingsGroup === 11) {
+      if (root.learning.queries.length) root.resetLearning()
     } else root.selectSettingsOption(0)
   }
 
@@ -488,6 +528,7 @@ Item {
         }
         if (typeof parsed.showRecents === "boolean") base.showRecents = parsed.showRecents
         if (typeof parsed.showCategoryTitles === "boolean") base.showCategoryTitles = parsed.showCategoryTitles
+        if (typeof parsed.learnSelections === "boolean") base.learnSelections = parsed.learnSelections
         if (isFinite(Number(parsed.genderMode))) base.genderMode = Math.max(0, Math.min(2, Math.floor(Number(parsed.genderMode))))
         if (typeof parsed.lastCategory === "string") {
           var lc = parsed.lastCategory.toLowerCase()
@@ -510,6 +551,12 @@ Item {
     settingsFile.setText(JSON.stringify(root.settings))
   }
 
+  function flushLearning() {
+    if (!root.learningLoaded || !root.learningDirty) return
+    learningFile.setText(JSON.stringify(root.learning))
+    root.learningDirty = false
+  }
+
   function scheduleSave() {
     if (!root.settingsLoaded) return
     settingsSaveTimer.restart()
@@ -524,19 +571,40 @@ Item {
   Process {
     id: stateDirProc
     command: ["mkdir", "-p", Quickshell.env("HOME") + "/.local/state/omarchy/plugins/" + root.pluginId]
-    onExited: settingsFile.reload()
+    onExited: {
+      settingsFile.reload()
+      learningFile.reload()
+    }
   }
 
   Timer {
     id: settingsSaveTimer
     interval: 250
     repeat: false
-    onTriggered: root.flushSettings()
+    onTriggered: {
+      root.flushSettings()
+      root.flushLearning()
+    }
   }
 
   FileView {
     path: root.pluginDir + "/emojis.json"
     onLoaded: root.loadEmojis(text())
+  }
+
+  FileView {
+    id: learningFile
+    path: root.learningPath
+    watchChanges: false
+    atomicWrites: true
+    printErrors: false
+    onLoaded: {
+      if (!root.learningLoaded) {
+        root.learning = SearchPreferences.load(text(), EmojiData.normalizedQuery, Date.now())
+        root.learningLoaded = true
+      }
+    }
+    onLoadFailed: root.learningLoaded = true
   }
 
   FileView {
@@ -674,7 +742,7 @@ Item {
             root.selectPage(1)
             event.accepted = true
           } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-            if (root.cursorActive) root.activateIndex(root.selectedIndex, !!(event.modifiers & Qt.ControlModifier))
+            if (root.cursorActive) root.activateIndex(root.selectedIndex, !!(event.modifiers & Qt.ControlModifier), root.selectionOrigin === "keyboard")
             else if (displayModel.count > 0) root.cursorActive = true
             event.accepted = true
           } else if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 32 && event.text.charCodeAt(0) !== 127) {
@@ -874,13 +942,14 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onContainsMouseChanged: if (containsMouse) {
+                  root.selectionOrigin = "hover"
                   root.cursorActive = true
                   root.selectedIndex = index
                 }
                 onClicked: {
                   root.cursorActive = true
                   root.selectedIndex = index
-                  root.activateIndex(index, false)
+                  root.activateIndex(index, false, true)
                 }
               }
             }
@@ -1302,6 +1371,106 @@ Item {
               cursorShape: Qt.PointingHandCursor
               onClicked: categoryTitlesToggle.toggled()
             }
+          }
+
+          PanelSeparator {
+            foreground: root.foreground
+            strength: 0.3
+          }
+
+          PanelSectionHeader {
+            text: "SEARCH PREFERENCES"
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+          }
+
+          Item {
+            id: learningRow
+            width: parent.width
+            height: Math.max(learningLabel.implicitHeight, learningToggle.implicitHeight) + Style.space(4)
+
+            Text {
+              id: learningLabel
+              anchors.left: parent.left
+              anchors.right: learningToggle.left
+              anchors.rightMargin: Style.space(8)
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Learn from selections"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              elide: Text.ElideRight
+            }
+
+            ToggleSwitch {
+              id: learningToggle
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              checked: root.settings.learnSelections === true
+              hasCursor: root.showSettings && root.settingsGroup === 9
+              cursorRing: hasCursor
+              cursorPad: 0
+              onToggled: root.applySetting("learnSelections", !root.settings.learnSelections)
+            }
+
+            MouseArea {
+              anchors.fill: parent
+              cursorShape: Qt.PointingHandCursor
+              onClicked: learningToggle.toggled()
+            }
+          }
+
+          Text {
+            width: parent.width
+            text: "Remembers repeated choices between equally relevant matches."
+            color: root.foreground
+            opacity: 0.6
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+
+          Text {
+            width: parent.width
+            visible: root.learningQuery !== ""
+            text: "Current search: " + root.filterText
+            color: root.foreground
+            opacity: 0.6
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            elide: Text.ElideRight
+          }
+
+          Button {
+            id: resetSearchButton
+            width: parent.width
+            text: "Reset this search"
+            enabled: root.hasQueryLearning
+            hasCursor: root.showSettings && root.settingsGroup === 10
+            fontSize: Style.font.caption
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
+            bordered: true
+            focusable: false
+            onClicked: root.resetLearning(root.learningQuery)
+          }
+
+          Button {
+            id: resetLearningButton
+            width: parent.width
+            text: "Reset all learned preferences"
+            enabled: root.learning.queries.length > 0
+            hasCursor: root.showSettings && root.settingsGroup === 11
+            fontSize: Style.font.caption
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
+            bordered: true
+            focusable: false
+            onClicked: root.resetLearning()
           }
         }
       }
