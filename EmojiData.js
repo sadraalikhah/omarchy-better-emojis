@@ -144,7 +144,7 @@ function scoreItem(item, words, query, allowFuzzy) {
 
 // filterEmojis(emojis, query, limit)          -> all categories
 // filterEmojis(emojis, query, limit, category)-> one category ("recent" handled by caller)
-function filterEmojis(emojis, query, limit, category) {
+function filterEmojis(emojis, query, limit, category, preferences) {
   var values = Array.isArray(emojis) ? emojis : []
   var needle = normalizedQuery(query)
   var words = needle ? needle.split(" ") : []
@@ -166,7 +166,12 @@ function filterEmojis(emojis, query, limit, category) {
   }
   var out = matches(false)
   if (words.length && out.length === 0) out = matches(true)
-  if (words.length) out.sort(function(a, b) { return b.score - a.score || a.index - b.index })
+  if (words.length) out.sort(function(a, b) {
+    // Preferences only break exact relevance ties; they never change matching.
+    return b.score - a.score
+      || ((preferences && preferences[b.item.e]) || 0) - ((preferences && preferences[a.item.e]) || 0)
+      || a.index - b.index
+  })
   if (out.length > max) out.length = max
   var result = []
   for (var j = 0; j < out.length; j++) result.push(out[j].item)
@@ -213,12 +218,12 @@ function displayItems(items, emojiMap, mergeGenders, genderMode, showAllTones) {
       seenGroups[item.gg] = true
     }
     if (!showAllTones || !item.t) {
-      out.push({ item: item, preToned: false })
+      out.push({ item: item, preToned: false, searchEmoji: values[i].e })
       continue
     }
-    out.push({ item: { e: item.e, n: item.n, k: item.k, c: item.c }, preToned: true })
+    out.push({ item: { e: item.e, n: item.n, k: item.k, c: item.c }, preToned: true, searchEmoji: values[i].e })
     for (var tone = 0; tone < 5; tone++)
-      out.push({ item: { e: item.v[tone], n: item.n, k: item.k, c: item.c }, preToned: true })
+      out.push({ item: { e: item.v[tone], n: item.n, k: item.k, c: item.c }, preToned: true, searchEmoji: values[i].e })
   }
   return out
 }
