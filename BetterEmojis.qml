@@ -92,7 +92,7 @@ Item {
   ]
 
   function defaultSettings() {
-    return { cellSize: 46, cardWidth: 480, cardHeight: 560, skinTone: 0, showAllTones: false, showAllGenders: false, mergeGenders: true, genderMode: 0, showRecents: true, lastCategory: "all", recents: [] }
+    return { cellSize: 46, cardWidth: 480, cardHeight: 560, skinTone: 0, showAllTones: false, showAllGenders: false, mergeGenders: true, genderMode: 0, showRecents: true, showCategoryTitles: false, lastCategory: "all", recents: [] }
   }
 
   function mergedSettings(patch) {
@@ -400,7 +400,7 @@ Item {
   }
 
   function selectSettingsGroup(delta) {
-    var total = root.settings.showRecents === false ? 7 : 8
+    var total = 9
     var next = root.settingsGroup
     for (var step = 0; step < total; step++) {
       next = (next + delta + total) % total
@@ -423,6 +423,7 @@ Item {
     else if (root.settingsGroup === 5) item = genderColumn
     else if (root.settingsGroup === 6) item = recentsRow
     else if (root.settingsGroup === 7) item = clearButton
+    else if (root.settingsGroup === 8) item = categoryTitlesRow
     if (!item || !settingsPage) return
     var top = settingsPage.contentY
     var bottom = top + settingsPage.height
@@ -462,6 +463,8 @@ Item {
       root.rebuildDisplay()
     } else if (root.settingsGroup === 7) {
       if (root.settings.showRecents !== false) root.clearRecents()
+    } else if (root.settingsGroup === 8) {
+      root.applySetting("showCategoryTitles", !root.settings.showCategoryTitles)
     } else root.selectSettingsOption(0)
   }
 
@@ -484,6 +487,7 @@ Item {
           base.showAllGenders = false
         }
         if (typeof parsed.showRecents === "boolean") base.showRecents = parsed.showRecents
+        if (typeof parsed.showCategoryTitles === "boolean") base.showCategoryTitles = parsed.showCategoryTitles
         if (isFinite(Number(parsed.genderMode))) base.genderMode = Math.max(0, Math.min(2, Math.floor(Number(parsed.genderMode))))
         if (typeof parsed.lastCategory === "string") {
           var lc = parsed.lastCategory.toLowerCase()
@@ -787,6 +791,16 @@ Item {
                 opacity: chip.isActive ? 1 : 0.65
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.title
+              }
+
+              Text {
+                visible: root.settings.showCategoryTitles === true
+                anchors.verticalCenter: parent.verticalCenter
+                text: chip.modelData.label
+                color: chip.isActive ? root.selectedText : root.foreground
+                opacity: chip.isActive ? 1 : 0.65
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.body
               }
 
             }
@@ -1231,6 +1245,53 @@ Item {
             bordered: true
             focusable: false
             onClicked: root.clearRecents()
+          }
+
+          PanelSeparator {
+            foreground: root.foreground
+            strength: 0.3
+          }
+
+          PanelSectionHeader {
+            text: "CATEGORY TABS"
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+          }
+
+          Item {
+            id: categoryTitlesRow
+            width: parent.width
+            height: Math.max(categoryTitlesLabel.implicitHeight, categoryTitlesToggle.implicitHeight) + Style.space(4)
+
+            Text {
+              id: categoryTitlesLabel
+              anchors.left: parent.left
+              anchors.right: categoryTitlesToggle.left
+              anchors.rightMargin: Style.space(8)
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Show category titles"
+              color: root.foreground
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.bodySmall
+              elide: Text.ElideRight
+            }
+
+            ToggleSwitch {
+              id: categoryTitlesToggle
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              checked: root.settings.showCategoryTitles === true
+              hasCursor: root.showSettings && root.settingsGroup === 8
+              cursorRing: hasCursor
+              cursorPad: 0
+              onToggled: root.applySetting("showCategoryTitles", !root.settings.showCategoryTitles)
+            }
+
+            MouseArea {
+              anchors.fill: parent
+              cursorShape: Qt.PointingHandCursor
+              onClicked: categoryTitlesToggle.toggled()
+            }
           }
         }
       }

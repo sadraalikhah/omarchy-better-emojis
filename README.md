@@ -6,7 +6,7 @@ Designed to adhere to Omarchy conventions — fully keyboard-accessible, Nerd
 Fonts icons for categories, and instant open/close with no lag.
 
 This fork adds ranked English/Persian search, colloquial aliases, clipboard
-retention after insertion, and icon-only category tabs. It is based on
+retention after insertion, and optional category titles. It is based on
 [Wessel Boers' Better Emojis](https://github.com/Wessel-Boers/omarchy-better-emojis).
 
 ![preview](preview.png)
@@ -29,7 +29,8 @@ omarchy plugin remove wessel.better-emojis
 
 ## Features
 
-- **Icon-only category tabs** — All, Recent, Smileys & Emotion, People & Body,
+- **Category tabs** — Icons by default; enable Show category titles in Settings
+  to display names beside them. All, Recent, Smileys & Emotion, People & Body,
   Animals & Nature, Food & Drink, Activities, Travel & Places, Objects,
   Symbols, Flags. Search ranks matches across every category and requires all
   query words to match.
@@ -99,6 +100,7 @@ Settings include:
 - Default skin tone and the all-tones grid toggle
 - All-genders grid toggle, off by default so genders are combined
 - Show Recent tab and Clear recent emojis
+- Show category titles, off by default
 
 ## How it works
 
